@@ -1,16 +1,25 @@
-from Qt import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import nodz_main
 
-try:
-    app = QtWidgets.QApplication([])
-except:
-    # I guess we're running somewhere that already has a QApp created
-    app = None
+app = QtWidgets.QApplication([])
+gui = QtWidgets.QMainWindow()
 
 nodz = nodz_main.Nodz(None)
-# nodz.loadConfig(filePath='')
+nodz.loadConfig(filePath='./default_config.json')
 nodz.initialize()
-nodz.show()
+nodz.gridVisToggle = False
+nodz.gridSnapToggle = False
+
+toolbar = QtWidgets.QToolBar()
+gui.addToolBar(QtCore.Qt.TopToolBarArea, toolbar)
+
+widget = QtWidgets.QLabel("label")
+dock = QtWidgets.QDockWidget("test")
+dock.setWidget(widget)
+gui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock)
+
+gui.setCentralWidget(nodz)
+gui.show()
 
 
 ######################################################################
@@ -18,71 +27,71 @@ nodz.show()
 ######################################################################
 
 # Nodes
-@QtCore.Slot(str)
+#@QtCore.Slot(str)
 def on_nodeCreated(nodeName):
     print('node created : ', nodeName)
 
-@QtCore.Slot(str)
+#@QtCore.Slot(str)
 def on_nodeDeleted(nodeName):
     print('node deleted : ', nodeName)
 
-@QtCore.Slot(str, str)
+#@QtCore.Slot(str, str)
 def on_nodeEdited(nodeName, newName):
     print('node edited : {0}, new name : {1}'.format(nodeName, newName))
 
-@QtCore.Slot(str)
+#@QtCore.Slot(str)
 def on_nodeSelected(nodesName):
     print('node selected : ', nodesName)
 
-@QtCore.Slot(str, object)
+#@QtCore.Slot(str, object)
 def on_nodeMoved(nodeName, nodePos):
     print('node {0} moved to {1}'.format(nodeName, nodePos))
 
-@QtCore.Slot(str)
+#@QtCore.Slot(str)
 def on_nodeDoubleClick(nodeName):
     print('double click on node : {0}'.format(nodeName))
 
 # Attrs
-@QtCore.Slot(str, int)
+#@QtCore.Slot(str, int)
 def on_attrCreated(nodeName, attrId):
     print('attr created : {0} at index : {1}'.format(nodeName, attrId))
 
-@QtCore.Slot(str, int)
+#@QtCore.Slot(str, int)
 def on_attrDeleted(nodeName, attrId):
     print('attr Deleted : {0} at old index : {1}'.format(nodeName, attrId))
 
-@QtCore.Slot(str, int, int)
+#@QtCore.Slot(str, int, int)
 def on_attrEdited(nodeName, oldId, newId):
     print('attr Edited : {0} at old index : {1}, new index : {2}'.format(nodeName, oldId, newId))
 
 # Connections
-@QtCore.Slot(str, str, str, str)
+#@QtCore.Slot(str, str, str, str)
 def on_connected(srcNodeName, srcPlugName, destNodeName, dstSocketName):
     print('connected src: "{0}" at "{1}" to dst: "{2}" at "{3}"'.format(srcNodeName, srcPlugName, destNodeName, dstSocketName))
 
-@QtCore.Slot(str, str, str, str)
+#@QtCore.Slot(str, str, str, str)
 def on_disconnected(srcNodeName, srcPlugName, destNodeName, dstSocketName):
     print('disconnected src: "{0}" at "{1}" from dst: "{2}" at "{3}"'.format(srcNodeName, srcPlugName, destNodeName, dstSocketName))
 
 # Graph
-@QtCore.Slot()
+#@QtCore.Slot()
 def on_graphSaved():
     print('graph saved !')
 
-@QtCore.Slot()
+#@QtCore.Slot()
 def on_graphLoaded():
     print('graph loaded !')
 
-@QtCore.Slot()
+#@QtCore.Slot()
 def on_graphCleared():
     print('graph cleared !')
 
-@QtCore.Slot()
+#@QtCore.Slot()
 def on_graphEvaluated():
     print('graph evaluated !')
 
 # Other
-@QtCore.Slot(object)
+#@QtCore.Slot(object)
 def on_keyPressed(key):
     print('key pressed : ', key)
 
@@ -196,24 +205,17 @@ nodz.editAttribute(node=nodeC, index=0, newName=None, newIndex=-1)
 nodz.editAttribute(node=nodeC, index=-1, newName='NewAttrName', newIndex=None)
 
 # Attributes Deletion
-nodz.deleteAttribute(node=nodeC, index=-1)
+# nodz.deleteAttribute(node=nodeC, index=-1)
 
 
 # Nodes Edition
 nodz.editNode(node=nodeC, newName='newNodeName')
 
 # Nodes Deletion
-nodz.deleteNode(node=nodeC)
-
+# nodz.deleteNode(node=nodeC)
 
 # Graph
-print( nodz.evaluateGraph())
-
-nodz.saveGraph(filePath='Enter your path')
-
-nodz.clearGraph()
-
-nodz.loadGraph(filePath='Enter your path')
+print(">>> EVAL",  nodz.evaluateGraph() )
 
 
 

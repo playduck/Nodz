@@ -1,7 +1,7 @@
 import os
 import json
 import re
-from Qt import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 
 def _convertDataToColor(data=None, alternate=False, av=20):
@@ -116,7 +116,7 @@ def _swapListIndices(inputList, oldIndex, newIndex):
 # IO
 def _loadConfig(filePath):
     """
-    Read the configuration file and strips out comments.
+    Read the configuration file.
 
     :param filePath: File path.
     :type  filePath: Str.
@@ -124,11 +124,7 @@ def _loadConfig(filePath):
     """
     with open(filePath, 'r') as myfile:
         fileString = myfile.read()
-
-        # remove comments
-        cleanString = re.sub('//.*?\n|/\*.*?\*/', '', fileString, re.S)
-
-        data = json.loads(cleanString)
+        data = json.loads(fileString)
 
     return data
 
@@ -167,4 +163,3 @@ def _loadData(filePath):
 
     print("Data successfully loaded !")
     return j_data
-

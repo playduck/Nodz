@@ -2,7 +2,7 @@ import os
 import re
 import json
 
-from Qt import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets
 import nodz_utils as utils
 
 
@@ -20,29 +20,29 @@ class Nodz(QtWidgets.QGraphicsView):
 
     """
 
-    signal_NodeCreated = QtCore.Signal(object)
-    signal_NodeDeleted = QtCore.Signal(object)
-    signal_NodeEdited = QtCore.Signal(object, object)
-    signal_NodeSelected = QtCore.Signal(object)
-    signal_NodeMoved = QtCore.Signal(str, object)
-    signal_NodeDoubleClicked = QtCore.Signal(str)
+    signal_NodeCreated = QtCore.pyqtSignal(object)
+    signal_NodeDeleted = QtCore.pyqtSignal(object)
+    signal_NodeEdited = QtCore.pyqtSignal(object, object)
+    signal_NodeSelected = QtCore.pyqtSignal(object)
+    signal_NodeMoved = QtCore.pyqtSignal(str, object)
+    signal_NodeDoubleClicked = QtCore.pyqtSignal(str)
 
-    signal_AttrCreated = QtCore.Signal(object, object)
-    signal_AttrDeleted = QtCore.Signal(object, object)
-    signal_AttrEdited = QtCore.Signal(object, object, object)
+    signal_AttrCreated = QtCore.pyqtSignal(object, object)
+    signal_AttrDeleted = QtCore.pyqtSignal(object, object)
+    signal_AttrEdited = QtCore.pyqtSignal(object, object, object)
 
-    signal_PlugConnected = QtCore.Signal(object, object, object, object)
-    signal_PlugDisconnected = QtCore.Signal(object, object, object, object)
-    signal_SocketConnected = QtCore.Signal(object, object, object, object)
-    signal_SocketDisconnected = QtCore.Signal(object, object, object, object)
+    signal_PlugConnected = QtCore.pyqtSignal(object, object, object, object)
+    signal_PlugDisconnected = QtCore.pyqtSignal(object, object, object, object)
+    signal_SocketConnected = QtCore.pyqtSignal(object, object, object, object)
+    signal_SocketDisconnected = QtCore.pyqtSignal(object, object, object, object)
 
-    signal_GraphSaved = QtCore.Signal()
-    signal_GraphLoaded = QtCore.Signal()
-    signal_GraphCleared = QtCore.Signal()
-    signal_GraphEvaluated = QtCore.Signal()
+    signal_GraphSaved = QtCore.pyqtSignal()
+    signal_GraphLoaded = QtCore.pyqtSignal()
+    signal_GraphCleared = QtCore.pyqtSignal()
+    signal_GraphEvaluated = QtCore.pyqtSignal()
 
-    signal_KeyPressed = QtCore.Signal(object)
-    signal_Dropped = QtCore.Signal()
+    signal_KeyPressed = QtCore.pyqtSignal(object)
+    signal_Dropped = QtCore.pyqtSignal()
 
     def __init__(self, parent, configPath=defaultConfigPath):
         """
@@ -77,13 +77,17 @@ class Nodz(QtWidgets.QGraphicsView):
         self.currentState = 'ZOOM_VIEW'
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
 
-        inFactor = 1.15
+        inFactor = 1.05
         outFactor = 1 / inFactor
 
-        if event.delta() > 0:
-            zoomFactor = inFactor
+        if event.angleDelta().y() == 0:
+            zoomFactor = 1
         else:
-            zoomFactor = outFactor
+
+            if event.angleDelta().y() > 0:
+                zoomFactor = inFactor
+            else:
+                zoomFactor = outFactor
 
         self.scale(zoomFactor, zoomFactor)
         self.currentState = 'DEFAULT'
@@ -336,17 +340,43 @@ class Nodz(QtWidgets.QGraphicsView):
         self.rubberband.hide()
         return painterPath
 
-    def _focus(self):
+    def _focus(self, padding=50):
         """
         Center on selected nodes or all of them if no active selection.
-
         """
+        print("focus")
         if self.scene().selectedItems():
+            print("selected")
             itemsArea = self._getSelectionBoundingbox()
             self.fitInView(itemsArea, QtCore.Qt.KeepAspectRatio)
         else:
+            print("no selected")
             itemsArea = self.scene().itemsBoundingRect()
+            frame_width = self.frameGeometry().width()
+            frame_height = self.frameGeometry().height()
+            if itemsArea.width() / itemsArea.height() < frame_width / frame_height:
+                x_pad = (frame_width - itemsArea.width() * frame_height / itemsArea.height()) / 2
+                y_pad = 0
+            else:
+                x_pad = 0
+                y_pad = (frame_height - itemsArea.height() * frame_width / itemsArea.width()) / 2
+            itemsArea.setX(itemsArea.x() - padding - x_pad)
+            itemsArea.setY(itemsArea.y() - padding - y_pad - self.config['node_font_size'])
+            itemsArea.setWidth(itemsArea.width() + padding + x_pad * 2)
+            itemsArea.setHeight(itemsArea.height() + padding + y_pad * 2)
             self.fitInView(itemsArea, QtCore.Qt.KeepAspectRatio)
+
+    # def _focus(self):
+    #     """
+    #     Center on selected nodes or all of them if no active selection.
+
+    #     """
+    #     if self.scene().selectedItems():
+    #         itemsArea = self._getSelectionBoundingbox()
+    #         self.fitInView(itemsArea, QtCore.Qt.KeepAspectRatio)
+    #     else:
+    #         itemsArea = self.scene().itemsBoundingRect()
+    #         self.fitInView(itemsArea, QtCore.Qt.KeepAspectRatio)
 
     def _getSelectionBoundingbox(self):
         """
@@ -974,7 +1004,7 @@ class NodeScene(QtWidgets.QGraphicsScene):
     The scene displaying all the nodes.
 
     """
-    signal_NodeMoved = QtCore.Signal(str, object)
+    signal_NodeMoved = QtCore.pyqtSignal(str, object)
 
     def __init__(self, parent):
         """
@@ -1106,7 +1136,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         # Methods.
         self._createStyle(config)
 
-    @property
+    #@property
     def height(self):
         """
         Increment the final height of the node every time an attribute
@@ -1121,7 +1151,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         else:
             return self.baseHeight
 
-    @property
+    #@property
     def pen(self):
         """
         Return the pen based on the selection state of the node.
@@ -1150,7 +1180,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
 
         self.nodeCenter = QtCore.QPointF()
         self.nodeCenter.setX(self.baseWidth / 2.0)
-        self.nodeCenter.setY(self.height / 2.0)
+        self.nodeCenter.setY(self.height() / 2.0)
 
         self._brush = QtGui.QBrush()
         self._brush.setStyle(QtCore.Qt.SolidPattern)
@@ -1328,7 +1358,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         The bounding rect based on the width and height variables.
 
         """
-        rect = QtCore.QRect(0, 0, self.baseWidth, self.height)
+        rect = QtCore.QRect(0, 0, self.baseWidth, self.height())
         rect = QtCore.QRectF(rect)
         return rect
 
@@ -1348,11 +1378,11 @@ class NodeItem(QtWidgets.QGraphicsItem):
         """
         # Node base.
         painter.setBrush(self._brush)
-        painter.setPen(self.pen)
+        painter.setPen(self.pen())
 
         painter.drawRoundedRect(0, 0,
                                 self.baseWidth,
-                                self.height,
+                                self.height(),
                                 self.radius,
                                 self.radius)
 
@@ -1463,7 +1493,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
                 gridSize = self.scene().gridSize
 
                 currentPos = self.mapToScene(event.pos().x() - self.baseWidth / 2,
-                                             event.pos().y() - self.height / 2)
+                                             event.pos().y() - self.height() / 2)
 
                 snap_x = (round(currentPos.x() / gridSize) * gridSize) - gridSize/4
                 snap_y = (round(currentPos.y() / gridSize) * gridSize) - gridSize/4
@@ -1471,9 +1501,9 @@ class NodeItem(QtWidgets.QGraphicsItem):
                 self.setPos(snap_pos)
 
                 self.scene().updateScene()
-            else:
-                self.scene().updateScene()
-                super(NodeItem, self).mouseMoveEvent(event)
+        else:
+            self.scene().updateScene()
+            super(NodeItem, self).mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         """
@@ -2118,10 +2148,20 @@ class ConnectionItem(QtWidgets.QGraphicsPathItem):
 
         path = QtGui.QPainterPath()
         path.moveTo(self.source_point)
-        dx = (self.target_point.x() - self.source_point.x()) * 0.5
-        dy = self.target_point.y() - self.source_point.y()
-        ctrl1 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 0)
-        ctrl2 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 1)
+
+        # original cubic
+        # dx = (self.target_point.x() - self.source_point.x()) * 0.5
+        # dy = self.target_point.y() - self.source_point.y()
+        # ctrl1 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 0)
+        # ctrl2 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 1)
+        # path.cubicTo(ctrl1, ctrl2, self.target_point)
+
+        dx = abs(self.target_point.x() - self.source_point.x())
+        dy = abs(self.target_point.y() - self.source_point.y())
+        xoffset = dx / 2
+
+        ctrl1 = QtCore.QPointF(self.source_point.x() + xoffset, self.source_point.y())
+        ctrl2 = QtCore.QPointF(self.target_point.x() - xoffset, self.target_point.y())
         path.cubicTo(ctrl1, ctrl2, self.target_point)
 
         self.setPath(path)
