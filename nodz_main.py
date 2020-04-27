@@ -1388,7 +1388,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         metrics = QtGui.QFontMetrics(painter.font())
         text_width = metrics.boundingRect(self.name).width() + 14
         text_height = metrics.boundingRect(self.name).height() + 14
-        margin = (text_width - self.baseWidth) * 0.5
+        margin = (text_width - self.baseWidth)
         textRect = QtCore.QRect(-margin,
                                 -text_height,
                                 text_width,
@@ -1445,7 +1445,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
                         # Set non-connectable attributes color.
                         painter.setPen(utils._convertDataToColor(config['non_connectable_color']))
 
-            textRect = QtCore.QRect(rect.left() + self.radius,
+            textRect = QtCore.QRect(rect.left() + self.radius + 10,
                                      rect.top(),
                                      rect.width() - 2*self.radius,
                                      rect.height())
