@@ -2145,18 +2145,10 @@ class ConnectionItem(QtWidgets.QGraphicsPathItem):
         path.moveTo(self.source_point)
 
         # original cubic
-        # dx = (self.target_point.x() - self.source_point.x()) * 0.5
-        # dy = self.target_point.y() - self.source_point.y()
-        # ctrl1 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 0)
-        # ctrl2 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 1)
-        # path.cubicTo(ctrl1, ctrl2, self.target_point)
-
-        dx = abs(self.target_point.x() - self.source_point.x())
-        dy = abs(self.target_point.y() - self.source_point.y())
-        xoffset = dx / 2
-
-        ctrl1 = QtCore.QPointF(self.source_point.x() + xoffset, self.source_point.y())
-        ctrl2 = QtCore.QPointF(self.target_point.x() - xoffset, self.target_point.y())
+        dx = (self.target_point.x() - self.source_point.x()) * 0.5
+        dy = self.target_point.y() - self.source_point.y()
+        ctrl1 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 0)
+        ctrl2 = QtCore.QPointF(self.source_point.x() + dx, self.source_point.y() + dy * 1)
         path.cubicTo(ctrl1, ctrl2, self.target_point)
 
         self.setPath(path)
