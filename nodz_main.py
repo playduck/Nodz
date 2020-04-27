@@ -104,10 +104,16 @@ class Nodz(QtWidgets.QGraphicsView):
             self.initMouse = QtGui.QCursor.pos()
             self.setInteractive(False)
 
+        # Drag Item
+        elif (event.button() == QtCore.Qt.LeftButton and
+              event.modifiers() == QtCore.Qt.NoModifier and
+              self.scene().itemAt(self.mapToScene(event.pos()), QtGui.QTransform()) is not None):
+            self.currentState = 'DRAG_ITEM'
+            self.setInteractive(True)
 
         # Drag view
-        elif (event.button() == QtCore.Qt.MiddleButton and
-              event.modifiers() == QtCore.Qt.AltModifier):
+        elif (event.button() == QtCore.Qt.LeftButton and
+              event.modifiers() == QtCore.Qt.NoModifier):
             self.currentState = 'DRAG_VIEW'
             self.prevPos = event.pos()
             self.setCursor(QtCore.Qt.ClosedHandCursor)
@@ -116,20 +122,11 @@ class Nodz(QtWidgets.QGraphicsView):
 
         # Rubber band selection
         elif (event.button() == QtCore.Qt.LeftButton and
-              event.modifiers() == QtCore.Qt.NoModifier and
+              event.modifiers() == QtCore.Qt.AltModifier and
               self.scene().itemAt(self.mapToScene(event.pos()), QtGui.QTransform()) is None):
             self.currentState = 'SELECTION'
             self._initRubberband(event.pos())
             self.setInteractive(False)
-
-
-        # Drag Item
-        elif (event.button() == QtCore.Qt.LeftButton and
-              event.modifiers() == QtCore.Qt.NoModifier and
-              self.scene().itemAt(self.mapToScene(event.pos()), QtGui.QTransform()) is not None):
-            self.currentState = 'DRAG_ITEM'
-            self.setInteractive(True)
-
 
         # Add selection
         elif (event.button() == QtCore.Qt.LeftButton and
