@@ -3,9 +3,7 @@ import re
 import json
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-import nodz_utils as utils
-
-
+from Nodz import nodz_utils as utils
 
 defaultConfigPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default_config.json')
 
