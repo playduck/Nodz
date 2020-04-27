@@ -1483,8 +1483,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
         .
 
         """
-        if self.scene().views()[0].gridVisToggle:
-            if self.scene().views()[0].gridSnapToggle or self.scene().views()[0]._nodeSnap:
+        if self.scene().views()[0].gridSnapToggle or self.scene().views()[0]._nodeSnap:
                 gridSize = self.scene().gridSize
 
                 currentPos = self.mapToScene(event.pos().x() - self.baseWidth / 2,
