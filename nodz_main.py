@@ -1074,6 +1074,20 @@ class NodeScene(QtWidgets.QGraphicsScene):
             painter.setPen(self.pen)
             painter.drawLines(lines)
 
+        o = config["grid_size"]
+        lines = [
+            QtCore.QLineF(0+o, 0+o, config["scene_width"]-o, 0+o),
+            QtCore.QLineF(0+o, 0+o, 0+o, config["scene_height"]-o),
+            QtCore.QLineF(0+o, config["scene_height"]-o, config["scene_width"]-o, config["scene_height"]-o),
+            QtCore.QLineF(config["scene_width"]-o, 0+o, config["scene_width"]-o, config["scene_height"]-o)
+        ]
+
+        self.pen = QtGui.QPen()
+        self.pen.setColor(utils._convertDataToColor(config["border_color"]))
+        self.pen.setWidth(5)
+        painter.setPen(self.pen)
+        painter.drawLines(lines)
+
     def updateScene(self):
         """
         Update the connections position.
