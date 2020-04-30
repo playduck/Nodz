@@ -428,13 +428,14 @@ class Nodz(QtWidgets.QGraphicsView):
         Delete selected nodes.
 
         """
+        removed_nodes = list()
         selected_nodes = list()
         for node in self.scene().selectedItems():
             selected_nodes.append(node.name)
-            node._remove()
+            removed_nodes.append(node._remove())
 
         # Emit signal.
-        self.signal_NodeDeleted.emit(selected_nodes)
+        self.signal_NodeDeleted.emit(removed_nodes)
 
     def _returnSelection(self):
         """
@@ -565,10 +566,10 @@ class Nodz(QtWidgets.QGraphicsView):
 
         if node in self.scene().nodes.values():
             nodeName = node.name
-            node._remove()
+            removed_node = node._remove()
 
             # Emit signal.
-            self.signal_NodeDeleted.emit([nodeName])
+            self.signal_NodeDeleted.emit(removed_node)
 
     def editNode(self, node, newName=None):
         """
@@ -1361,6 +1362,8 @@ class NodeItem(QtWidgets.QGraphicsItem):
         scene = self.scene()
         scene.removeItem(self)
         scene.update()
+
+        return self
 
     def boundingRect(self):
         """
