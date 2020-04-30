@@ -503,7 +503,7 @@ class Nodz(QtWidgets.QGraphicsView):
 
 
     # NODES
-    def createNode(self, name='default', preset='node_default', position=None, alternate=True):
+    def createNode(self, name='default', preset='node_default', position=None, alternate=True, userData=None):
         """
         Create a new node with a given name, position and color.
 
@@ -533,7 +533,7 @@ class Nodz(QtWidgets.QGraphicsView):
             return
         else:
             nodeItem = NodeItem(name=name, alternate=alternate, preset=preset,
-                                config=self.config)
+                                config=self.config, userData=userData)
 
             # Store node in scene.
             self.scene().nodes[name] = nodeItem
@@ -1107,7 +1107,7 @@ class NodeItem(QtWidgets.QGraphicsItem):
 
     """
 
-    def __init__(self, name, alternate, preset, config):
+    def __init__(self, name, alternate, preset, config, userData=None):
         """
         Initialize the class.
 
@@ -1125,6 +1125,8 @@ class NodeItem(QtWidgets.QGraphicsItem):
 
         """
         super(NodeItem, self).__init__()
+
+        self.userData = userData
 
         self.setZValue(1)
 
