@@ -2029,8 +2029,10 @@ class ConnectionItem(QtWidgets.QGraphicsPathItem):
         .
 
         """
-        return ("{0}.{1}".format(self.plugNode, self.plugAttr),
-                "{0}.{1}".format(self.socketNode, self.socketAttr))
+        return (
+            (self.plugItem.parentItem(), self.plugNode, self.plugAttr),
+            (self.socketItem.parentItem(), self.socketNode, self.socketAttr)
+        )
 
     def mousePressEvent(self, event):
         """
