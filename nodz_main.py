@@ -347,6 +347,9 @@ class Nodz(QtWidgets.QGraphicsView):
         else:
             print("no selected")
             itemsArea = self.scene().itemsBoundingRect()
+            if itemsArea.isEmpty():
+                print("no items")
+                return
             frame_width = self.frameGeometry().width()
             frame_height = self.frameGeometry().height()
             if itemsArea.width() / itemsArea.height() < frame_width / frame_height:
